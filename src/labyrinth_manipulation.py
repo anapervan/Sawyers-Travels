@@ -12,23 +12,25 @@ from sensor_msgs.msg import JointState
 import testing_func
 
 class Limb_Control:
-
-    """
-    l = limb_Control("right_limb")
-    l.joints["joint0"].pid.set_kp(10)
-    while():
-        error = 20
-        l.control_joint("joint0", error)
-
-    """
     def __init__(self, limb_name):
         """
         A class container of robot's limb information, PID controller
         and velocity control.
         """
-
+        self.error = 0
         self.robot_limb = intera_interface.Limb(limb_name)
         self.joints_pid = {name: intera_control.PID() for name in self.robot_limb.joint_names()}
+        # FIXIT:
+        # put in valid topic name, valid mas type,
+        self.error_sub = rospy.Subscriber('', XXX, self.get_error)
+
+    def get_error(self, data):
+        self.error = data
+
+    def set_joint_pid_k(self, joint_name, kp, ki, kd):
+        self.joints_pid[joint_name].set_kp(kp)
+        self.joints_pid[joint_name].set_ki(ki)
+        self.joints_pid[joint_name].set_kd(kd)
 
     def control_joint(self, joint_name, error):
         """
@@ -40,10 +42,18 @@ class Limb_Control:
 
     def start_control(self):
         #subscribe to error
-        return
+        while not rospy.is_shutdown():
+
+            if error > 0.01:
+                self.control_joint('right_j5', self.error) #control joint 5 vel
+                self.control_joint('right_j4', self.error) #control joint 6 vel
+
+            rospy.Rate(30).sleep()
 
     def init_all_joints(self):
-        #initialize all joints to starting post
+        """
+        Initialize all joints to starting post
+        """
         joints_starting_angles = [0.0, 1.1, 0.0, -1.1, 0.0, -np.pi/2, 0]
         joint_command = dict()
 
@@ -69,9 +79,13 @@ class Limb_Control:
 
                 pos = pos << 1
 
-            rospy.Rate(1).sleep
+            rospy.Rate(1).sleep()
 
     def set_joints_zeros(self):
+        """
+        Set all joints to 0 position
+        """
+
         done = False
         pos_goal = 0b1111111
 
@@ -90,7 +104,7 @@ class Limb_Control:
 
                 pos = pos << 1
 
-            rospy.Rate(1).sleep
+            rospy.Rate(1).sleep()
 
 if __name__ == "__main__":
 
