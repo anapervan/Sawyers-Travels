@@ -254,7 +254,7 @@ def obj_identify_sticker(frame_in):
         # cv2.imshow("maze_range",maze_range)
         return center_tf
 
-def dest(req):
+def start(req):
     global device
 
     cap = cv2.VideoCapture(device)
@@ -265,7 +265,7 @@ def dest(req):
             for i in range(5):
                 ret, frame_raw = cap.read()
                 cv2.waitKey(10)
-            pos = obj_identify_sticker(frame_raw)
+            pos,_ = obj_identify_ball(frame_raw)
             pos_x = pos[0]
             pos_y = pos[1]
             pos_z = 0
@@ -273,7 +273,7 @@ def dest(req):
             print("hi")
             break
         except:
-            print("Did not find the destination.")
+            print("Did not find the starting position.")
 
     cap.release()
     # pos_ros = Point(0,0,0)
@@ -282,8 +282,8 @@ def dest(req):
 def main():
     global device
 
-    rospy.init_node('maze_dest_server', anonymous=False)
-    s = rospy.Service('maze_dest', ctr_pos, dest)
+    rospy.init_node('ball_start_server', anonymous=False)
+    s = rospy.Service('ball_start', ctr_pos, start)
     device = rospy.get_param('~cam',default=0)
 
     # pub = rospy.Publisher("ball_pos", Point, queue_size= 10 )
