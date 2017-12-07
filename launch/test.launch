@@ -1,6 +1,5 @@
 <launch>
 
-    <node name="ball_pos_pub" pkg="see_maze" type="ball_pos_pub.py" launch-prefix = "xterm -e"  output = "screen"/>
 
     <node name="usb_cam" pkg="usb_cam" type="usb_cam_node">
         <param name="video_device" value="/dev/video1" />
@@ -8,10 +7,13 @@
         <param name="camera_name" value="tracker_camera" />
     </node>
 
-    <!-- <node name="maze_node" pkg="see_maze" type="maze_node.py" /> -->
+    <node name="maze_node" pkg="sawyers_travels" type="maze_node.py" />
 
-<!--     <node name="get_dest" pkg="see_maze" type="get_dest.py">
+    <node name='maze_watching' pkg="sawyers_travels" type="maze_watching.py" launch-prefix = "xterm -e" output = "screen">
         <param name="cam" value="1" />
-    </node > -->
+    </node >
 
 </launch>
+
+
+<!--  -->

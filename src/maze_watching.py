@@ -10,6 +10,8 @@ from sensor_msgs.msg import Image
 from cv_bridge import CvBridge, CvBridgeError
 from see_maze.srv import ctr_pos
 # from see_maze.srv import maze_bin
+import threading
+import time
 
 global flag_init
 flag_init = True
@@ -135,7 +137,8 @@ def obj_identify_ball(frame_in):
         radius = int(radius)
 
         # cv2.drawContours(frame, contours, -1, (0, 0, 255),3)
-        cv2.circle(frame,center,radius,(0,0,255),2)
+        # cv2.circle(frame,center,radius,(0,0,255),2)
+        center_ori = center
 
         center = np.array(center)
         center = np.append(center,1)
@@ -157,7 +160,8 @@ def obj_identify_ball(frame_in):
 
         # cv2.drawContours(frame, [approx], -1, (255, 0, 0),3)
         # cv2.imshow('frame',frame)
-        return [center_tf, approx]
+        # cv2.waitKey(1)
+        return [center_tf, approx, center_ori, radius]
 
 def obj_identify_maze(frame_in):
     frame = frame_in.copy()
@@ -256,41 +260,169 @@ def obj_identify_sticker(frame_in):
 
 def start(req):
     global device
+    global flag_s1
+    global sub
+    global frame_hi
+    global bridge
 
-    cap = cv2.VideoCapture(device)
+    # cap = cv2.VideoCapture(device)
     # cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'))
-    ret, frame_raw = cap.read()
-    while (ret):
+    # ret, frame_raw = cap.read()
     # for tt in range(10):
-        try:
-            for i in range(5):
-                ret, frame_raw = cap.read()
-                cv2.waitKey(10)
-            pos,_ = obj_identify_ball(frame_raw)
-            pos_x = pos[0]
-            pos_y = pos[1]
-            pos_z = 0
-            pos_ros = Point(pos_x,pos_y,0)
-            print("hi")
-            break
-        except:
-            print("Did not find the starting position.")
 
-    cap.release()
+    try:
+        frame_raw2 = bridge.imgmsg_to_cv2(frame_hi,"bgr8")
+        pos,_ ,_ ,_= obj_identify_ball(frame_raw2)
+        pos_x = pos[0]
+        pos_y = pos[1]
+        pos_z = 0
+        pos_ros = Point(pos_x,pos_y,0)
+        print("hi,s1")
+        flag_s1 = True
+    except:
+        print("Did not find the starting position.")
+
+    # cap.release()
     # pos_ros = Point(0,0,0)
     return pos_ros
 
-def main():
+def dest(req):
     global device
+    global flag_s2
+    global sub
+    global frame_hi
+    global bridge
 
-    rospy.init_node('maze_start_server', anonymous=False)
-    s = rospy.Service('maze_start', ctr_pos, start)
+    # cap = cv2.VideoCapture(device)
+    # ret, frame_raw = cap.read()
+    # for tt in range(10):
+    try:
+        frame_raw2 = bridge.imgmsg_to_cv2(frame_hi,"bgr8")
+        pos = obj_identify_sticker(frame_raw2)
+        pos_x = pos[0]
+        pos_y = pos[1]
+        pos_z = 0
+        pos_ros = Point(pos_x,pos_y,0)
+        print("hi,s2")
+        flag_s2 = True
+    except:
+        print("Did not find the destination.")
+
+    # cap.release()
+    # pos_ros = Point(0,0,0)
+    return pos_ros
+
+def pubBallPos(data):
+    global flag_init
+    global pub
+    global sub
+    global bridge
+    global sum_approx_now
+    global approx_now
+    global center_tf_now
+    global maze_bin
+    global rate
+    global flag_s1
+    global flag_s2
+    # rate = rospy.Rate(2)
+    # print(flag_s1)
+    # print(flag_s2)
+
+    try:
+        if flag_init == True:
+            # print("init-ttt")
+            frame_raw = bridge.imgmsg_to_cv2(data,"bgr8")
+            # print(frame_raw)
+            # cv2.imshow('frame_raw',frame_raw)
+            # print(11111)
+            # cv2.waitKey(1)
+            # print(222222)
+            maze_bin = obj_identify_maze(frame_raw)
+            center_tf ,approx, center_ori, radius = obj_identify_ball(frame_raw)
+            approx_now = approx
+            center_tf_now = center_tf
+            sum_approx_now = np.sum(approx)
+            # filter_size = 5
+            # filter = deque([center_tf,center_tf,center_tf,center_tf,center_tf], filter_size )
+            print('init--------------------------------------------------')
+            flag_init = False
+        else:
+            # print(2)
+            frame_raw = bridge.imgmsg_to_cv2(data,"bgr8")
+            # print(3)
+            # cv2.imshow('frame_raw',frame_raw)
+            # cv2.waitKey(1)
+            center_tf ,approx, center_ori, radius= obj_identify_ball(frame_raw)
+            sum_approx = np.sum(approx)
+            if approx.size != 8 or abs(sum_approx_now - sum_approx) > 30:
+                # print(abs(sum_approx_now - sum_approx))
+                pass
+            else:
+                approx_now = approx
+                sum_approx_now = sum_approx
+                # center_tf_now = center_tf
+            if dist(center_tf,center_tf_now) < 300 :
+                center_tf_now = center_tf
+            pos_x = center_tf_now[0]
+            pos_y = center_tf_now[1]
+            pub.publish(Point(pos_x, pos_y, 0))
+
+    except CvBridgeError as e:
+        print(e)
+
+    # print("ttt")
+    # pos_x = center_tf_now[0]
+    # pos_y = center_tf_now[1]
+    # pub.publish(Point(pos_x, pos_y, 0))
+
+    # print(maze_bin)
+    cv2.drawContours(frame_raw, [approx_now], -1, (255, 0, 0),3)
+    cv2.circle(frame_raw,center_ori,radius,(0,0,255),2)
+    cv2.imshow('frame_raw',frame_raw)
+    cv2.circle(maze_bin,center_tf_now,3,150,-1)
+    cv2.imshow("maze_bin",maze_bin)
+    cv2.waitKey(1)
+
+def savePic(data):
+    global frame_hi
+    frame_hi = data
+    try:
+        pubBallPos(frame_hi)
+    except:
+        print("savePic func error")
+
+def main():
+    global pub
+    global sub
+    global bridge
+    global rate
+    global device
+    global flag_s1
+    global flag_s2
+
+    flag_s1 = False
+    flag_s2 = False
+
+    rospy.sleep(1)
+
+    rospy.init_node('maze_watching', anonymous=False)
+    rate = rospy.Rate(1)
+    bridge = CvBridge()
     device = rospy.get_param('~cam',default=0)
+
+    sub = rospy.Subscriber("/usb_cam/image_raw",Image, savePic)
+
+    s1 = rospy.Service('maze_start', ctr_pos, start)
+    s2 = rospy.Service('maze_dest', ctr_pos, dest)
+
+    rospy.sleep(1)
+
+    pub = rospy.Publisher("ball_pos", Point, queue_size = 10 )
+
 
     # pub = rospy.Publisher("ball_pos", Point, queue_size= 10 )
     # bridge = CvBridge()
     # sub = rospy.Subscriber("/usb_cam/image_raw",Image, callback)
-
 
     try:
         rospy.spin()
