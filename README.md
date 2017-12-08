@@ -14,7 +14,7 @@ A Sawyer [gripper mount](https://github.com/anapervan/Sawyers-Travels/blob/maste
 Next, a [maze](https://github.com/anapervan/Sawyers-Travels/blob/master/CAD/stl/Maze%201.stl) was designed, cut, and painted blue. The maze base was painted black, so that the camera could clearly differentiate between the walls and the background. Once the maze was mounted, a white ball was placed in the starting position and a green sticker was placed at the desired ending position.
 
 #### Computer Vision
-Sawyer's head camera is oriented at an angle that would not work for this project, so a separate tripod and a 720p webcam were used to record the maze and ball. A node identified the blue outline of the maze by transforming the corners that it detected onto a 30cm square (the dimensions of the maze were known ahead of time). So no matter the orientation of the maze, a top-down view could always be extrapolated. Next, the position of the rest of the blue walls in the maze were identified, as well as the position of the white ball and the green "final position" sticker. This information was all passed along to the Path Planning node.
+Sawyer's head camera's resolution would not work for this project, so a separate tripod and a 720p webcam were used to record the maze and ball. A node identified the blue outline of the maze by transforming the corners that it detected onto a 30cm square (the dimensions of the maze were known ahead of time). So no matter the orientation of the maze, a top-down view could always be extrapolated. Next, the position of the rest of the blue walls in the maze were identified, as well as the position of the white ball and the green "final position" sticker. This information was all passed along to the Path Planning node.
 
 #### Path Planning
 A grid-based planning algorithm was used to solve the maze. The maze was divided into a 7x7 grid, so that the sampling process moved very quickly. A global plan, from the initial ball location to the desired final location at the green sticker, was constructed and then a local plan, from the current position to the next grid point, was sent to the Robot Control node. The local path was updated with new ball position information at approximately 20Hz.
@@ -29,43 +29,47 @@ These values were found experimentally, while testing Sawyer with the ball and m
 
 ## Implementation
 #### Launch
-launch files and dependencies
+[`maze.launch`](https://github.com/anapervan/Sawyers-Travels/blob/master/launch/maze.launch)
 
 #### Services
-[`ctr_pos.srv`]()
+[`ctr_pos.srv`](https://github.com/anapervan/Sawyers-Travels/blob/master/srv/ctr_pos.srv)
 
 #### Nodes
 ##### Computer Vision Node
-[`get_start.py`]()
+[`maze_watching.py`](https://github.com/anapervan/Sawyers-Travels/blob/master/src/maze_watching.py)
 
-[`get_dest.py`]()
+Subscribed Topic: `/usb_cam/image_raw`
 
-[`ball_pos_pub.py`]()
+Published Topic: `/ball_pos`
 
-Subscribed Topics:
-
-Published Topics:
+Services: [`/maze_start`]()  [`/maze_dest`]()
 
 ##### Path Planning Node
-[`.py`]()
+[`maze_node.py`](https://github.com/anapervan/Sawyers-Travels/blob/master/src/maze_node.py)
 
-Subscribed Topics:
+Subscribed Topic: `/ball_pos`
 
-Published Topics:
+Published Topic: `/testing_error`
+
+Services: [`/maze_start`]()  [`/maze_dest`]()
 
 ##### Robot Control Node
 [`labyrinth_manipulation.py`]()
 
 Subscribed Topics:
+`/testing_error`
+`/robot/joint_states`
 
-Published Topics:
+##### Flow
+Below is an image of the rqt graph for our system.
 
-##### Loop
-feedback loop / rqt graph
 
 ## Conclusion
 #### Further Improvements
 We had already started building a new, circular maze and revising the path planning algorithm to use a grid with polar coordinates, but in the end we did not have time to alter the computer vision code to identify the circular shape or to experiment the dynamics of the circular maze. But solving the square maze for different starting and ending points lead to a lot of different possible maze paths -- almost as if we had made many mazes.
 
+We could also further improve our controller so that Sawyer would more reliably make the difficult turns on the first try. We could do this by experimenting more with our PID values, or changing controllers entirely (e.g. LQR).
+
 
 #### Video
+A video of Sawyer solving the maze can be found [here](https://drive.google.com/open?id=1LxHiB6_96YCJSQaFPLO4D3bzvNEsXdsf).
