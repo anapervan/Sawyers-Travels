@@ -31,9 +31,6 @@ These values were found experimentally, while testing Sawyer with the ball and m
 #### Launch
 [`maze.launch`](https://github.com/anapervan/Sawyers-Travels/blob/master/launch/maze.launch)
 
-#### Services
-[`ctr_pos.srv`](https://github.com/anapervan/Sawyers-Travels/blob/master/srv/ctr_pos.srv)
-
 #### Nodes
 ##### Computer Vision Node
 [`maze_watching.py`](https://github.com/anapervan/Sawyers-Travels/blob/master/src/maze_watching.py)
