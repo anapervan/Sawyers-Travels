@@ -39,7 +39,7 @@ Subscribed Topic: `/usb_cam/image_raw`
 
 Published Topic: `/ball_pos`
 
-Services: [`/maze_start`]()  [`/maze_dest`]()
+Services: `/maze_start` `/maze_dest`
 
 ##### Path Planning Node
 [`maze_node.py`](https://github.com/anapervan/Sawyers-Travels/blob/master/src/maze_node.py)
@@ -48,10 +48,10 @@ Subscribed Topic: `/ball_pos`
 
 Published Topic: `/testing_error`
 
-Services: [`/maze_start`]()  [`/maze_dest`]()
+Services: `/maze_start` `/maze_dest`
 
 ##### Robot Control Node
-[`labyrinth_manipulation.py`]()
+[`labyrinth_manipulation.py`](https://github.com/anapervan/Sawyers-Travels/blob/master/src/labyrinth_manipulation.py)
 
 Subscribed Topics:
 `/testing_error`
