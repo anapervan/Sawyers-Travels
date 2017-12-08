@@ -1,0 +1,19 @@
+<launch>
+
+
+    <node name="usb_cam" pkg="usb_cam" type="usb_cam_node">
+        <param name="video_device" value="/dev/video1" />
+        <param name="pixel_format" value="yuyv" />
+        <param name="camera_name" value="tracker_camera" />
+    </node>
+
+    <node name="maze_node" pkg="sawyers_travels" type="maze_node.py" />
+
+    <node name='maze_watching' pkg="sawyers_travels" type="maze_watching.py" launch-prefix = "xterm -e" output = "screen">
+        <param name="cam" value="1" />
+    </node >
+
+</launch>
+
+
+<!--  -->
