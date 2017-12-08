@@ -43,7 +43,7 @@ class maze_node:
         maze = self.maze
         ax = self.ax
         verts_h = self.verts_h
-        ballpnt = [data.x,data.y]
+        ballpnt = [int(data.x),int(data.y)]
         glist = self.glist
         geom = self.geom
         num_grid = self.num_grid
@@ -59,8 +59,8 @@ class maze_node:
         self.localpatch = lclp
 
         self.dist_out.data = dist
-        mp.draw()
-        mp.pause(0.0000001)
+        # mp.draw()
+        # mp.pause(0.0000001)
         # mp.savefig('maze.png')
         # self.img_out = imread('maze.png')
         # self.image_pub.publish(self.img_out)
@@ -541,7 +541,7 @@ def main():
 
     # time.sleep(2)
     mn = maze_node()
-    mn.maze = '/home/dylan2/catkin_ws/src/see_maze/maze_binary.jpg'
+    mn.maze = '/home/williamshwang/workspace/catkin_ws/src/Sawyers-Travels/maze_bin.png'
     mn.geom = 'square'
     mn.num_grid = 7
 
@@ -640,101 +640,12 @@ def main():
 
     try:
         # mp.ion()
-        mp.show(block=True)
+        mp.show(block=False)
+        rospy.sleep(1)
         rospy.spin()
     except KeyboardInterrupt:
         print("Shutting down")
         cv2.destroyAllWindows()
-
-
-    # global pub_dist
-    # global pub_image
-    # global sub_ball
-
-    # rospy.init_node('maze_node')
-    # pub_dist = rospy.Publisher('testing_error', Float64MultiArray, queue_size=10)
-    # pub_image = rospy.Publisher('image_topic',Image,queue_size=10)
-    # sub_ball = rospy.Subscriber("ball_pos",Point,update_path)
-    # rate = rospy.Rate(30)
-
-
-
-
-
-
-
-
-    # worlds = imread("maze10b.png",mode='L')
-    # qinit_s = [(np.shape(worlds)[1])/2+5,7]
-    # qgoal_s = [(np.shape(worlds)[1])/2-7,np.shape(worlds)[0]-7]
-    # worldc = imread("maze2_view2.png",mode='L')
-    # qinit_c = [(np.shape(worldc)[1])/2,(np.shape(worldc)[0])/2+7]
-    # qgoal_c = [(np.shape(worldc)[1])/2+7,np.shape(worldc)[0]-7]
-    # ms1=n_rrt_gen("maze10b.png",10,'square',qinit_s,qgoal_s)
-    # mp.show()
-    # bpnt=[9,116]
-    # lclp,m = update_path('maze10b.png',ms1[0],ms1[2],bpnt,ms1[1],'square',10)
-    # mp.show(block=False)
-    # mp.savefig('maz1.png')
-
-    # time.sleep(1)
-    # bpnt=[20,8]
-    # lclp,m = update_path('maze10b.png',m[0],ms1[2],bpnt,ms1[1],'square',10,patchlist=m[3],localpatch=lclp)
-    # mp.show(block=False)
-    # mp.savefig('maz2.png')
-
-
-    # ms2=n_rrt_gen("maze_binary2.jpg",7,'square',qinit_s,qgoal_s)
-    # # mp.show()
-    # bpnt=[156,150]
-    # lclp,m = update_path('maze_binary2.jpg',ms2[0],ms2[2],bpnt,ms2[1],'square',7)
-    # mp.show(block=False)
-    # mp.savefig('maz1.png')
-
-    # time.sleep(1)
-    # bpnt=[277,271]
-    # lclp,m = update_path('maze_binary2.jpg',m[0],ms2[2],bpnt,ms2[1],'square',7,patchlist=m[3],localpatch=lclp)
-    # mp.show(block=False)
-    # mp.savefig('maz2.png')
-
-
-
-    # ms3=n_rrt_gen("maze2_view2.png",11,'circle',qinit_c,qgoal_c)
-    # bpnt=[124,613]
-    # lclp,m = update_path('maze2_view2.png',ms3[0],ms3[2],bpnt,ms3[1],'circle',11)
-    # mp.show(block=False)
-    # mp.savefig('maz1.png')
-
-    # time.sleep(1)
-    # bpnt=[207,588]
-    # lclp,m = update_path('maze2_view2.png',m[0],ms3[2],bpnt,ms3[1],'circle',11,patchlist=m[3],localpatch=lclp)
-    # mp.show(block=False)
-    # mp.savefig('maz2.png')
-    # mp.show()
-    # ms4=n_rrt_gen("cmaze_9b.png",9,'circle',qinit_c,qgoal_c)
-    # bpnt=[26,84]
-    # lclp,m = update_path('cmaze_9b.png',ms4[0],ms4[2],bpnt,ms4[1],'circle',9)
-    # mp.show(block=False)
-    # mp.savefig('maz1.png')
-
-    # time.sleep(1)
-    # bpnt=[92,137]
-    # lclp,m = update_path('cmaze_9b.png',m[0],ms4[2],bpnt,ms4[1],'circle',9,patchlist=m[3],localpatch=lclp)
-    # mp.show(block=False)
-    # mp.savefig('maz2.png')
-
-    # time.sleep(1)
-    # bpnt=[52,96]
-    # lclp,m = update_path('cmaze_9b.png',m[0],ms4[2],bpnt,ms4[1],'circle',9,patchlist=m[3],localpatch=lclp)
-    # mp.show(block=False)
-    # mp.savefig('maz3.png')
-
-    # time.sleep(1)
-    # bpnt=[26,84]
-    # lclp,m = update_path('cmaze_9b.png',m[0],ms4[2],bpnt,ms4[1],'circle',9,patchlist=m[3],localpatch=lclp)
-    # mp.show(block=False)
-    # mp.savefig('maz4.png')
-
 
 
 
