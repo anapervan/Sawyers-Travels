@@ -1,5 +1,5 @@
 <launch>
-
+    <node name="laby_mani" pkg="sawyers_travels" type="labyrinth_manipulation.py" />
 
     <node name="usb_cam" pkg="usb_cam" type="usb_cam_node">
         <param name="video_device" value="/dev/video1" />
