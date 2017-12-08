@@ -20,11 +20,11 @@ Sawyer's head camera is oriented at an angle that would not work for this projec
 A grid-based planning algorithm was used to solve the maze. The maze was divided into a 7x7 grid, so that the sampling process moved very quickly. A global plan, from the initial ball location to the desired final location at the green sticker, was constructed and then a local plan, from the current position to the next grid point, was sent to the Robot Control node. The local path was updated with new ball position information at approximately 20Hz.
 
 #### Robot Control
-Sawyer was programmed to begin at the same starting position each time, holding the maze level and low, so that the camera could see it. After moving to the initial position, only two joints were used (joint 4 and joint 5) to move the ball in the positive and negative x and y directions. The error between the current ball position and the next desired position (from the local path) was detected, and then two PID controllers (one for joint position and one for joint velocity) were used to get the ball to the next point in the local path. The final values for the PID controllers were:
+Sawyer was programmed to begin at the same starting position each time, holding the maze level and low, so that it was in view of the camera. After moving to the initial position, only two joints were used (joint 4 and joint 5) to move the ball in the positive and negative x and y directions. The error between the current ball position and the next desired position (from the local path) was detected, and then two PID controllers (one for joint position and one for joint velocity) were used to get the ball to the next point in the local path. The final values for the PID controllers were:
 - joint position: k<sub>p</sub> = 0.01, k<sub>i</sub> = 0.005, k<sub>d</sub> = 0.0.
 - joint velocity: k<sub>p</sub> = 0.001, k<sub>i</sub> = 0.0, k<sub>d</sub> = 0.0.
 
-These values were found experimentally, while testing Sawyer with the ball and maze. Having both controllers allowed Sawyer to swing the ball into turns where there was no "backboard" (a wall for the ball to stop at before turning).
+These values were found experimentally, while testing Sawyer with the ball and maze. Having both controllers allowed Sawyer to swing the ball into turns where there was no "backboard" (a wall for the ball to stop at before turning). Also, if the ball ever got stuck, the k<sub>i</sub> term got larger and larger so that Sawyer kept rotating the maze until the ball moved.
 
 
 ## Implementation
