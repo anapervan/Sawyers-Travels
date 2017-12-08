@@ -4,7 +4,7 @@ import rospy
 from geometry_msgs.msg import Point
 from std_msgs.msg import Float64MultiArray
 from sensor_msgs.msg import Image
-from see_maze.srv import ctr_pos, maze_bin
+from sawyers_travels.srv import ctr_pos
 import numpy as np
 import matplotlib.pyplot as mp
 from matplotlib.path import Path

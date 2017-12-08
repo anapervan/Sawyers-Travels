@@ -8,7 +8,7 @@ from collections import deque
 from geometry_msgs.msg import Point
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge, CvBridgeError
-from see_maze.srv import ctr_pos
+from sawyers_travels.srv import ctr_pos
 # from see_maze.srv import maze_bin
 import threading
 import time
@@ -432,4 +432,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
