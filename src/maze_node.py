@@ -12,16 +12,10 @@ import matplotlib.patches as patches
 from scipy.misc import imread
 from math import cos,sin
 import cv2
-from cv_bridge import CvBridge, CvBridgeError
-import time
-# import time
+
 
 class maze_node:
     def __init__(self):
-
-        # self.ballpnt = []
-        # self.vect_pub = []
-        # self.image_pub = []
         # self.img_out = Image()
         self.maze = []
         self.ax = []
@@ -228,11 +222,11 @@ def maze2graph(maze,num_grid,geom):
                 mlist.append([i,j])
             gtable.append(glist)
     else:
-        theta = np.deg2rad(np.arange(11.25, 360,22.5))
+        theta = np.deg2rad(np.arange(0, 360,30))
         rgridx = col/num_grid
         rgridy = row/num_grid
-        rad_lx = rgridx*1
-        rad_ly = rgridy*1
+        rad_lx = rgridx*0.6
+        rad_ly = rgridy*0.6
         # mid = [col/2,row/2]
         # mlist.append(mid)
 
@@ -365,9 +359,13 @@ def n_rrt_gen(img,numpath,geom,qinit,qgoal,ax=None):
     if ax == None:
         lstyle = '-'
         clr = 'blue'
+        startfc = 'r'
+        endfc = 'b'
     else:
         lstyle = '--'
         clr = 'red'
+        startfc = 'pink'
+        endfc = 'cyan'
     patch_h = patches.PathPatch(path_h,color=clr,lw=2,ls=lstyle)
     if ax==None:
         ax = fig.add_subplot(111)
@@ -375,8 +373,8 @@ def n_rrt_gen(img,numpath,geom,qinit,qgoal,ax=None):
         ax.set_xlim([0,worldo.shape[1]])
         ax.set_ylim([0,worldo.shape[0]])
 
-    startp = patches.Circle((qinit[0],qinit[1]),4,fc='r')
-    endp = patches.Circle((qgoal[0],qgoal[1]),4,fc='b')
+    startp = patches.Circle((qinit[0],qinit[1]),4,fc=startfc)
+    endp = patches.Circle((qgoal[0],qgoal[1]),4,fc=endfc)
 
     ax.add_patch(patch_h)
     ax.add_patch(startp)
@@ -538,34 +536,11 @@ def flippnt(pnt,r):
 def main():
 
     rospy.init_node('maze_node')
-
-    # time.sleep(2)
     mn = maze_node()
-    mn.maze = '/home/williamshwang/workspace/catkin_ws/src/Sawyers-Travels/maze_bin.png'
+    mn.maze = '/home/mikewiz/catkin_ws/src/Sawyers-Travels/imgs/maze_bin.png'
     mn.geom = 'square'
     mn.num_grid = 7
 
-    # bridge = CvBridge()
-
-    # rospy.wait_for_service('maze_bin')
-    # try:
-    #     mazepic = rospy.ServiceProxy('maze_bin',maze_bin)
-
-    # except: rospy.ServiceException, e:
-    #     print "Service call failed: %s"%e
-    # getEndpoint = rospy.ServiceProxy('maze_dest',ctr_pos)
-    # rospy.wait_for_service('maze_dest')
-
-    # try:
-    #     endpoint = getEndpoint()
-    #     pass
-    # except rospy.ServiceException, e:
-    #     print "Service call failed: %s"%e
-
-    # try:
-    #     mn.maze = bridge.imgmsg_to_cv2(mazepic,'mono8')
-    # except CvBridgeError as e:
-    #     print(e)
 
     getStartpoint = rospy.ServiceProxy('maze_start',ctr_pos)
     rospy.wait_for_service('maze_start')
@@ -595,28 +570,14 @@ def main():
             if worlds[i,j]<255:
                 worlds[i,j]=0
 
-    # nonz = np.nonzero(world)
-    # wc = (np.ones(np.shape(world),dtype=np.uint8))*255
+    # nonz = np.nonzero(worlds)
+    # wc = (np.ones(np.shape(worlds),dtype=np.uint8))*255
     # wc[nonz] = 0
-    # world = wc
+    # worlds = wc
     worlds = np.flipud(worlds)
     kernel = np.ones((3,3), np.uint8)
     worlds = cv2.dilate(worlds,kernel,iterations=1)
     mn.maze = worlds
-    # endpoint = flippnt(endpoint,r)
-
-    # ballpnt = [endpoint.Pos.x,endpoint.Pos.y]
-    # qgoal = flippnt(ballpnt,r)
-
-    # qinit_s = [(np.shape(worlds)[1])/2+5,20]
-    # qgoal_s = [(np.shape(worlds)[1])/2-7,np.shape(worlds)[0]-20]
-
-
-
-    # worlds = imread(mn.maze,mode='L')
-    # mn.maze =worlds
-    # r = worlds.shape[0]
-    # mn.row = r
 
 
     startpnt = [int(startpoint.Pos.x),int(startpoint.Pos.y)]
@@ -626,9 +587,10 @@ def main():
     qgoal = flippnt(endpnt,r)
 
     qinit_s = qinit
-    #[(np.shape(worlds)[1])/2+5,20]
     qgoal_s = qgoal
-    #[(np.shape(worlds)[1])/2-7,np.shape(worlds)[0]-20]
+
+    # qinit_s = [(np.shape(worlds)[1])/2+5,20]
+    # qgoal_s = [(np.shape(worlds)[1])/2-7,np.shape(worlds)[0]-20]
 
     ms2=n_rrt_gen(mn.maze, mn.num_grid,mn.geom,qinit_s,qgoal_s)
     mn.ax = ms2[0]
@@ -639,7 +601,6 @@ def main():
     mn.globalpatch = ms2[3]
 
     try:
-        # mp.ion()
         mp.show(block=False)
         rospy.sleep(1)
         rospy.spin()
