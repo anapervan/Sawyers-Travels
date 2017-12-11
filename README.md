@@ -20,10 +20,12 @@ Sawyer's head camera's resolution would not work for this project, so a separate
 A grid-based planning algorithm was used to solve the maze. The maze was divided into a 7x7 grid, so that the sampling process moved very quickly. A global plan, from the initial ball location to the desired final location at the green sticker, was constructed and then a local plan, from the current position to the next determined grid point, was sent to the Robot Control node. The local path was updated with new ball position information at approximately 30Hz.
 
 An example path planning sequence is shown in the picture below the following description:
+
 Global Path:
 - Red Point = Starting Configuration
 - Blue Point = Ending Configuration
 - Blue Solid Line = Global Path
+
 Local Path:
 - Pink Point = Closest node to current ball position
 - Cyan Point = Closest global path node to current ball position
